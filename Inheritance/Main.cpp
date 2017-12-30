@@ -1,3 +1,14 @@
+#define _CRTDBG_MAP_ALLOC 
+#include <stdlib.h> 
+#include <crtdbg.h> 
+
+#ifdef _DEBUG
+#ifndef DBG_NEW
+#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#define new DBG_NEW
+#endif  //DBG_NEW
+#endif  // _DEBUG
+
 #include <iostream>
 #include <string>
 #include <conio.h>
@@ -293,6 +304,14 @@ void DoSpecials( MemeFighter& f1,MemeFighter& f2 )
 
 int main()
 {
+	_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
+	_CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDERR);
+	_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_FILE);
+	_CrtSetReportFile(_CRT_ERROR, _CRTDBG_FILE_STDERR);
+	_CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE);
+	_CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDERR);
+	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
 	std::vector<MemeFighter*> t1 = {
 		new MemeFrog( "Dat Boi",new Fists ),
 		new MemeStoner( "Good Guy Greg",new Bat ),
@@ -350,6 +369,7 @@ int main()
 		delete t2[i];
 	}
 
+	_CrtDumpMemoryLeaks();
 	while( !_kbhit() );
 	return 0;
 }
