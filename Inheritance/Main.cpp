@@ -96,12 +96,8 @@ public:
 		}
 	}
 	virtual void SpecialMove(MemeFighter&) = 0;
-	virtual ~MemeFighter()
-	{
-		std::cout << "Destroying base class MemeFighter." << std::endl;
-		
-	}
-	void GiveWeapon(std::unique_ptr<Weapon> pNewWeapon)
+        virtual ~MemeFighter() = default;
+        void GiveWeapon(std::unique_ptr<Weapon> pNewWeapon)
 	{
 		pWeapon = std::move(pNewWeapon);
 	}
@@ -118,11 +114,11 @@ public:
 		return *pWeapon;
 	}
 protected:
-	MemeFighter(const std::string& name, int hp, int speed, int power, Weapon* pWeapon = nullptr)
+	MemeFighter(const std::string& name, int hp, int speed, int power,std::unique_ptr<Weapon> pWeapon)
 		:
 		name(name),
 		attr({ hp,speed,power }),
-		pWeapon(pWeapon)
+		pWeapon(std::move(pWeapon))
 	{
 		std::cout << name << " enters the ring!" << std::endl;
 	}
@@ -189,9 +185,9 @@ public:
 class MemeFrog : public MemeFighter
 {
 public:
-	MemeFrog(const std::string& name, Weapon* pWeapon = nullptr)
+	MemeFrog(const std::string& name, std::unique_ptr<Weapon> pWeapon)
 		:
-		MemeFighter(name, 69, 7, 14, pWeapon)
+		MemeFighter(name, 69, 7, 14, std::move(pWeapon))
 	{}
 	void SpecialMove(MemeFighter& other) override
 	{
@@ -226,9 +222,9 @@ public:
 class MemeStoner : public MemeFighter
 {
 public:
-	MemeStoner(const std::string& name, Weapon* pWeapon = nullptr)
+	MemeStoner(const std::string& name, std::unique_ptr<Weapon> pWeapon)
 		:
-		MemeFighter(name, 80, 4, 10, pWeapon)
+		MemeFighter(name, 80, 4, 10, std::move(pWeapon))
 	{}
 	void SpecialMove(MemeFighter&) override
 	{
@@ -312,14 +308,14 @@ int main()
 	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	{
 		std::vector<std::unique_ptr<MemeFighter>> t1;
-		t1.push_back(std::make_unique<MemeFrog>("Dat Boi", new Fists));
-		t1.push_back(std::make_unique<MemeStoner>("Good Guy Greg", new Bat));
-		t1.push_back(std::make_unique<MemeFrog>("the WB Frog", new Knife));
+		t1.push_back(std::make_unique<MemeFrog>("Dat Boi", std::make_unique< Fists>()));
+		t1.push_back(std::make_unique<MemeStoner>("Good Guy Greg", std::make_unique< Bat>()));
+		t1.push_back(std::make_unique<MemeFrog>("the WB Frog", std::make_unique< Knife>()));
 	
 		std::vector<std::unique_ptr<MemeFighter>> t2;
-		t2.push_back(std::make_unique<MemeStoner>("Chong", new Fists));
-		t2.push_back(std::make_unique<MemeStoner>("Scumbag Steve", new Bat));
-		t2.push_back(std::make_unique<MemeFrog>("Pepe", new Knife));
+		t2.push_back(std::make_unique<MemeStoner>("Chong", std::make_unique< Fists>()));
+		t2.push_back(std::make_unique<MemeStoner>("Scumbag Steve", std::make_unique< Bat>()));
+		t2.push_back(std::make_unique<MemeFrog>("Pepe", std::make_unique< Knife>()));
 			
 		const auto alive_pred = [](const std::unique_ptr<MemeFighter>& pf) { return pf->IsAlive(); };
 		while (
